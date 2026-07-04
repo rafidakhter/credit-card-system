@@ -6,20 +6,22 @@ meta {
 
 post {
   url: {{baseUrl}}/purchase
+  body: json
   auth: none
 }
 
 headers {
   Content-Type: application/json
+  Idempotency-Key: purchase-003
 }
 
 body:json {
-  {
-    "customerId": "9b1f0b37-9b32-4b2f-8b2c-4a7a7a4d1111",
-    "cardId": "7d3f2b80-2e4f-4a8f-9f43-0bb2b5d22222",
-    "amountCents": 2599,
-    "currency": "CAD",
-    "merchantName": "Amazon",
-    "merchantCategory": "shopping"
-  }
+    {
+      "customerId": "11111111-1111-4111-8111-111111111111",
+      "cardId": "22222222-2222-4222-8222-222222222222",
+      "amountCents": 2599,
+      "currency": "CAD",
+      "merchantName": "Amazon",
+      "merchantCategory": "shopping"
+    }
 }

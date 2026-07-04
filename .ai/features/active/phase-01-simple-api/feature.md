@@ -88,6 +88,9 @@ Response shape:
 | 2026-07-04 | Completed Task 001: created NestJS API app and health endpoint. | Bruno `Health Check` returned `{ "status": "ok" }`. |
 | 2026-07-04 | Completed Task 002: added PostgreSQL with Docker Compose. | User confirmed Postgres is running from root `docker-compose.yaml`. |
 | 2026-07-04 | Completed Task 003: added Prisma schema and initial migration. | User confirmed Prisma migration completed successfully. |
+| 2026-07-04 | Added Node typings support for `apps/prisma.config.ts` by installing `@types/node` in `apps` and adding an `apps/tsconfig.json`. | Confirmed the config file now has a local TS project with `types: ["node"]`; direct `tsc` verification was not available because `typescript` is not installed in `apps`. |
+| 2026-07-04 | Updated Nest config loading so the API reads `apps/api/.env.local` and `apps/api/.env` explicitly. | Confirmed `ConfigModule` now points to both files, fixing the missing `DATABASE_URL` lookup path. |
+| 2026-07-04 | Added a shared Prisma seed script at `apps/prisma/seed.ts` and seeded a sample customer plus card. | Ran `npm run db:seed` from `apps/` successfully after wiring the Prisma client to the Postgres adapter and local env. |
 
 ## Decisions
 
@@ -99,6 +102,7 @@ Response shape:
 | 2026-07-04 | Keep `docker-compose.yaml` at the repository root. | Database and future infrastructure are project-level concerns, not only API source files. | N/A |
 | 2026-07-04 | Keep Prisma under `apps/prisma` instead of `apps/api/prisma`. | User wants database schema outside the API app to make the database layer feel separate. | N/A |
 | 2026-07-04 | Shift Phase 1 Task 004 to a domain-first design task instead of seed-first work. | The user wants services to drive business behavior and database updates. | N/A |
+| 2026-07-04 | Keep seed data next to the shared Prisma schema in `apps/prisma/seed.ts`. | One source of truth is clearer than duplicating seed logic inside the API app. | N/A |
 
 ## Mistakes and Lessons
 

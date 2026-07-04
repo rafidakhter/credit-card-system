@@ -1,20 +1,103 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { CardStatus, TransactionStatus } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreatePurchaseDto } from './dto/create-purchase.dto';
 import { PurchaseResult } from './types/purchase-result.type';
 
 @Injectable()
 export class PurchaseService {
-  async createPurchase(dto: CreatePurchaseDto): Promise<PurchaseResult> {
+  constructor(private readonly prisma: PrismaService) { }
+
+  async createPurchase(
+    dto: CreatePurchaseDto,
+    idempotencyKey: string,
+  ): Promise<PurchaseResult> {
+    const customer = await this.prisma.customer.findUnique({
+      where: { id: dto.customerId },
+    });
+
+    if (!customer) {
+      throw new NotFoundException('Customer not found');
+    }
+
+    const card = await this.prisma.card.findUnique({
+      where: { id: dto.cardId },
+    });
+
+    if (!card) {
+      throw new NotFoundException('Card not found');
+    }
+
+    if (card.customerId !== dto.customerId) {
+      throw new BadRequestException('Card does not belong to customer');
+    }
+
+    if (card.status !== CardStatus.ACTIVE) {
+      throw new BadRequestException('Card is not active');
+    }
+
+    const purchaseAmount = dto.amountCents / 100;
+
+    if (Number(card.availableLimit) < purchaseAmount) {
+      throw new BadRequestException('Insufficient available limit');
+    }
+
+    const newAvailableLimit = Number(card.availableLimit) - purchaseAmount;
+
+    const { transaction, updatedCard } = await this.prisma.$transaction(
+      async (tx) => {
+        const transaction = await tx.transaction.create({
+          data: {
+            customerId: dto.customerId,
+            cardId: dto.cardId,
+            merchantName: dto.merchantName,
+            amount: purchaseAmount,
+            currency: dto.currency,
+            status: TransactionStatus.APPROVED,
+            idempotencyKey: idempotencyKey,
+          },
+        });
+
+        const updatedCard = await tx.card.update({
+          where: { id: card.id },
+          data: {
+            availableLimit: newAvailableLimit,
+          },
+        });
+
+        await tx.ledgerEvent.create({
+          data: {
+            transactionId: transaction.id,
+            customerId: dto.customerId,
+            cardId: dto.cardId,
+            eventType: 'PURCHASE_APPROVED',
+            amount: purchaseAmount,
+            currency: dto.currency,
+            metadata: {
+              merchantName: dto.merchantName,
+              merchantCategory: dto.merchantCategory ?? null,
+            },
+          },
+        });
+
+        return { transaction, updatedCard };
+      },
+    )
+
     return {
-      transactionId: 'temp-transaction-id',
+      transactionId: transaction.id,
       customerId: dto.customerId,
       cardId: dto.cardId,
       amountCents: dto.amountCents,
       currency: dto.currency,
       merchantName: dto.merchantName,
       status: 'APPROVED',
-      availableLimitCents: 500000,
-      createdAt: new Date(),
+      availableLimitCents: Math.round(Number(updatedCard.availableLimit) * 100),
+      createdAt: transaction.createdAt,
     };
   }
 }
