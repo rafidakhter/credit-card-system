@@ -1,0 +1,25 @@
+meta {
+  name: Create Purchase
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/purchase
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "customerId": "9b1f0b37-9b32-4b2f-8b2c-4a7a7a4d1111",
+    "cardId": "7d3f2b80-2e4f-4a8f-9f43-0bb2b5d22222",
+    "amountCents": 2599,
+    "currency": "CAD",
+    "merchantName": "Amazon",
+    "merchantCategory": "shopping"
+  }
+}
