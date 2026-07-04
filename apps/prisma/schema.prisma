@@ -1,0 +1,92 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+model Customer {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  createdAt DateTime @default(now())
+
+  cards        Card[]
+  transactions Transaction[]
+  ledgerEvents LedgerEvent[]
+}
+
+model Card {
+  id             String     @id @default(uuid())
+  customerId     String
+  creditLimit    Decimal
+  availableLimit Decimal
+  status         CardStatus @default(ACTIVE)
+  createdAt      DateTime   @default(now())
+
+  customer     Customer      @relation(fields: [customerId], references: [id])
+  transactions Transaction[]
+  ledgerEvents LedgerEvent[]
+}
+
+model Transaction {
+  id             String            @id @default(uuid())
+  customerId     String
+  cardId         String
+  merchantName   String
+  amount         Decimal
+  currency       String
+  status         TransactionStatus @default(PENDING)
+  idempotencyKey String
+  createdAt      DateTime          @default(now())
+
+  customer     Customer      @relation(fields: [customerId], references: [id])
+  card         Card          @relation(fields: [cardId], references: [id])
+  ledgerEvents LedgerEvent[]
+
+  @@unique([customerId, idempotencyKey])
+}
+
+model LedgerEvent {
+  id            String          @id @default(uuid())
+  transactionId String
+  customerId    String
+  cardId        String
+  eventType     LedgerEventType
+  amount        Decimal
+  currency      String
+  createdAt     DateTime        @default(now())
+  metadata      Json?
+
+  transaction Transaction @relation(fields: [transactionId], references: [id])
+  customer    Customer    @relation(fields: [customerId], references: [id])
+  card        Card        @relation(fields: [cardId], references: [id])
+}
+
+enum CardStatus {
+  ACTIVE
+  BLOCKED
+  CLOSED
+}
+
+enum TransactionStatus {
+  PENDING
+  APPROVED
+  DECLINED
+  SETTLED
+  REFUNDED
+}
+
+enum LedgerEventType {
+  PURCHASE_APPROVED
+  PURCHASE_DECLINED
+  REFUND_ISSUED
+}

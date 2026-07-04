@@ -89,3 +89,5 @@ Add notes here as I learn new ideas.
 | 2026-07-04 | Health endpoint | A health endpoint is a simple URL that tells us the app is running. It is like asking, "Are you alive?" and the app answers, "yes." |
 | 2026-07-04 | Bruno collection | Bruno is a tool for saving API requests. It is like a notebook of buttons you can click to test endpoints such as `GET /health`. |
 | 2026-07-04 | Manual API verification | Getting `{ "status": "ok" }` from Bruno means the API route is connected and responding correctly. |
+| 2026-07-04 | Docker Compose | Docker Compose is a recipe for running local services. Here, it starts PostgreSQL so the API can use a real database later. |
+| 2026-07-04 | Prisma location | Putting Prisma in `apps/prisma` means we are treating the database schema like a project-level database layer, not just a file inside the API folder. |
