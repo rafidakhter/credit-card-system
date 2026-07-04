@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "credit-card-system",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

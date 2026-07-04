@@ -87,3 +87,5 @@ Add notes here as I learn new ideas.
 | --- | --- | --- |
 | 2026-07-04 | Functional vs non-functional requirements | Functional means what the system does. Non-functional means how safely, quickly, and reliably it does it. |
 | 2026-07-04 | Health endpoint | A health endpoint is a simple URL that tells us the app is running. It is like asking, "Are you alive?" and the app answers, "yes." |
+| 2026-07-04 | Bruno collection | Bruno is a tool for saving API requests. It is like a notebook of buttons you can click to test endpoints such as `GET /health`. |
+| 2026-07-04 | Manual API verification | Getting `{ "status": "ok" }` from Bruno means the API route is connected and responding correctly. |

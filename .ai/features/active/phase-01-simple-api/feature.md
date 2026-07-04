@@ -6,8 +6,8 @@
 - Phase: `.ai/tasks/phase-01-simple-api`
 - Owner: project
 - Last updated: 2026-07-04
-- Current task: `.ai/tasks/phase-01-simple-api/001-create-nestjs-app.md`
-- Next step: User will create the NestJS API app and add a basic health endpoint.
+- Current task: `.ai/tasks/phase-01-simple-api/002-add-postgres-docker-compose.md`
+- Next step: Add PostgreSQL with Docker Compose.
 
 ## Purpose
 
@@ -17,6 +17,7 @@ Build the simplest working backend before adding database, purchases, idempotenc
 
 - Create the initial NestJS API app.
 - Add a basic health endpoint.
+- Add Bruno API test collection for manual endpoint testing.
 - Keep the structure ready for future modules.
 - Later Phase 1 tasks will add PostgreSQL, Prisma, purchase flow, idempotency, ledger events, history filters, Swagger, and tests.
 
@@ -64,7 +65,7 @@ Response shape:
 
 ## Progress
 
-- [ ] 001 Create NestJS app.
+- [x] 001 Create NestJS app.
 - [ ] 002 Add PostgreSQL with Docker Compose.
 - [ ] 003 Add Prisma models.
 - [ ] 004 Create customer and card seed data.
@@ -80,6 +81,8 @@ Response shape:
 | Date | Work | Verification |
 | --- | --- | --- |
 | 2026-07-04 | Created Phase 1 active feature dossier. | Dossier created at `.ai/features/active/phase-01-simple-api/feature.md`. |
+| 2026-07-04 | Added Bruno collection for `GET /health`. | Collection files created under `bruno/credit-card-system`. |
+| 2026-07-04 | Completed Task 001: created NestJS API app and health endpoint. | Bruno `Health Check` returned `{ "status": "ok" }`. |
 
 ## Decisions
 
@@ -87,6 +90,7 @@ Response shape:
 | --- | --- | --- | --- |
 | 2026-07-04 | User will implement application code; Codex will maintain `.ai` and learning files unless asked to code. | Keeps the learning project hands-on for the user. | N/A |
 | 2026-07-04 | Task 001 will not include database, Prisma, purchase logic, or ledger logic. | The first goal is only to prove the API app can start and respond. | N/A |
+| 2026-07-04 | Keep Bruno tests at the project root under `bruno/credit-card-system`. | API tests can cover multiple apps later and stay separate from NestJS source code. | N/A |
 
 ## Mistakes and Lessons
 
@@ -96,9 +100,8 @@ Response shape:
 
 ## Open Questions
 
-- Should the NestJS app use JavaScript as the notes mention, or TypeScript because NestJS defaults to it and most examples use it?
+- None for Task 001.
 
 ## Handoff Notes
 
-The user is about to implement Task 001. Do not write application code unless the user explicitly asks. Support by explaining steps, reviewing errors, and updating `.ai` and `Learning.md` files.
-
+Task 001 is complete. The next task is `.ai/tasks/phase-01-simple-api/002-add-postgres-docker-compose.md`. Do not write application code unless the user explicitly asks. Support by explaining steps, reviewing errors, and updating `.ai` and `Learning.md` files.
