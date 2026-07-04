@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
   IsInt,
   IsNotEmpty,
@@ -17,6 +18,7 @@ export class CreatePurchaseDto {
   @IsUUID()
   cardId!: string;
 
+  @Type(() => Number)
   @IsInt()
   @IsPositive()
   amountCents!: number;
