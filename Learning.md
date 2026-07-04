@@ -91,3 +91,4 @@ Add notes here as I learn new ideas.
 | 2026-07-04 | Manual API verification | Getting `{ "status": "ok" }` from Bruno means the API route is connected and responding correctly. |
 | 2026-07-04 | Docker Compose | Docker Compose is a recipe for running local services. Here, it starts PostgreSQL so the API can use a real database later. |
 | 2026-07-04 | Prisma location | Putting Prisma in `apps/prisma` means we are treating the database schema like a project-level database layer, not just a file inside the API folder. |
+| 2026-07-04 | Prisma migration | A migration is Prisma's way of turning our schema into real database tables. It means the database now matches the model we designed. |

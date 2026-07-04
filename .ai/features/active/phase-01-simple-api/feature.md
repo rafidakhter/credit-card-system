@@ -6,8 +6,8 @@
 - Phase: `.ai/tasks/phase-01-simple-api`
 - Owner: project
 - Last updated: 2026-07-04
-- Current task: `.ai/tasks/phase-01-simple-api/003-add-prisma-models.md`
-- Next step: Add Prisma and model the first database tables.
+- Current task: `.ai/tasks/phase-01-simple-api/004-create-customer-card-seed-data.md`
+- Next step: Define the first domain services and the repository contracts they depend on.
 
 ## Purpose
 
@@ -19,7 +19,7 @@ Build the simplest working backend before adding database, purchases, idempotenc
 - Add a basic health endpoint.
 - Add Bruno API test collection for manual endpoint testing.
 - Keep the structure ready for future modules.
-- Later Phase 1 tasks will add PostgreSQL, Prisma, purchase flow, idempotency, ledger events, history filters, Swagger, and tests.
+- Later Phase 1 tasks will add purchase flow, idempotency, ledger events, history filters, Swagger, and tests around the domain-first service design.
 
 ## Non-Goals
 
@@ -37,6 +37,7 @@ Build the simplest working backend before adding database, purchases, idempotenc
 - Task 001 should stay intentionally small: app startup plus health endpoint.
 - Health endpoint is a simple "is the app alive?" check.
 - Prisma lives under `apps/prisma` by project decision, so database schema is kept outside the API source folder.
+- Service logic should drive state changes. Persistence should support the domain, not lead it.
 - Future modules should fit the Phase 1 direction: customers, cards, transactions, ledger, statements, merchants, and audit.
 
 ## API Contract
@@ -69,8 +70,8 @@ Response shape:
 
 - [x] 001 Create NestJS app.
 - [x] 002 Add PostgreSQL with Docker Compose.
-- [ ] 003 Add Prisma models.
-- [ ] 004 Create customer and card seed data.
+- [x] 003 Add Prisma models.
+- [ ] 004 Design initial domain services and repository contracts.
 - [ ] 005 Build purchase endpoint.
 - [ ] 006 Add idempotency key check.
 - [ ] 007 Add immutable ledger events.
@@ -86,6 +87,7 @@ Response shape:
 | 2026-07-04 | Added Bruno collection for `GET /health`. | Collection files created under `bruno/credit-card-system`. |
 | 2026-07-04 | Completed Task 001: created NestJS API app and health endpoint. | Bruno `Health Check` returned `{ "status": "ok" }`. |
 | 2026-07-04 | Completed Task 002: added PostgreSQL with Docker Compose. | User confirmed Postgres is running from root `docker-compose.yaml`. |
+| 2026-07-04 | Completed Task 003: added Prisma schema and initial migration. | User confirmed Prisma migration completed successfully. |
 
 ## Decisions
 
@@ -96,17 +98,18 @@ Response shape:
 | 2026-07-04 | Keep Bruno tests at the project root under `bruno/credit-card-system`. | API tests can cover multiple apps later and stay separate from NestJS source code. | N/A |
 | 2026-07-04 | Keep `docker-compose.yaml` at the repository root. | Database and future infrastructure are project-level concerns, not only API source files. | N/A |
 | 2026-07-04 | Keep Prisma under `apps/prisma` instead of `apps/api/prisma`. | User wants database schema outside the API app to make the database layer feel separate. | N/A |
+| 2026-07-04 | Shift Phase 1 Task 004 to a domain-first design task instead of seed-first work. | The user wants services to drive business behavior and database updates. | N/A |
 
 ## Mistakes and Lessons
 
 | Date | Mistake or False Start | Lesson / Prevention |
 | --- | --- | --- |
-| 2026-07-04 | N/A | Keep Phase 1 task boundaries small so the project does not become overwhelming. |
+| 2026-07-04 | Seed-data-first thinking was starting to lead the design. | Keep the domain and service boundaries clear before using seed data as a support tool. |
 
 ## Open Questions
 
-- Decide how the API will run Prisma commands from this layout: root scripts, `apps` scripts, or explicit `--schema apps/prisma/schema.prisma`.
+- Decide later whether to add package scripts for Prisma commands, or keep using explicit `npx prisma ...` from `apps/`.
 
 ## Handoff Notes
 
-Task 002 is complete. The next task is `.ai/tasks/phase-01-simple-api/003-add-prisma-models.md`. Do not write application code unless the user explicitly asks. Support by explaining steps, reviewing errors, and updating `.ai` and `Learning.md` files.
+Task 004 is now the active focus. The goal is to define the first domain services and repository contracts before writing more backend behavior. Minimal seed data can still be added later as a support tool for local testing. Do not write application code unless the user explicitly asks. Support by explaining steps, reviewing errors, and updating `.ai` and `Learning.md` files.

@@ -10,6 +10,13 @@ Client/Postman -> NestJS API -> PostgreSQL
 
 This phase should already be useful in an interview because it shows a working purchase system without over-engineering.
 
+We are taking a domain-first approach:
+
+- model the business behavior first
+- define services before controller-heavy implementation
+- let services decide state changes
+- let the database persist the result
+
 ## What We Are Trying to Achieve
 
 - A customer can have a card account.
@@ -35,7 +42,7 @@ I would not start with microservices. I would start with a simple modular monoli
 - [ ] Create NestJS app using JavaScript or the project-selected NestJS default.
 - [ ] Add PostgreSQL with Docker Compose.
 - [ ] Add Prisma models.
-- [ ] Create customer and card seed data.
+- [ ] Design initial domain services and repository contracts.
 - [ ] Build `POST /transactions/purchase`.
 - [ ] Add idempotency key check.
 - [ ] Add immutable `ledger_events`.
@@ -53,6 +60,26 @@ I would not start with microservices. I would start with a simple modular monoli
 - `statements`: monthly summaries and history later
 - `merchants`: mock merchant data if useful
 - `audit`: who did what and when later
+
+## Service-First Direction
+
+Before building more endpoints, define the first use cases:
+
+- `CreatePurchaseService`
+- `GetTransactionHistoryService`
+- later `CreateCustomerService`
+- later `IssueCardService`
+
+The service layer should:
+
+- validate business rules
+- decide whether a purchase is allowed
+- call repositories to save the result
+
+The database layer should:
+
+- load and save data
+- not contain the main business decision-making
 
 ## API Direction
 
@@ -80,7 +107,7 @@ Idempotency-Key: unique-request-id
 
 ## Done When
 
-- A seeded customer/card can make a mock purchase.
+- The first service and repository boundaries are clear.
 - Duplicate purchase requests do not double-charge.
 - Ledger events preserve the money story.
 - Purchase history works for the required ranges.
