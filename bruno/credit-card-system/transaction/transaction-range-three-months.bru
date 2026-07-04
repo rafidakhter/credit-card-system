@@ -1,0 +1,14 @@
+meta {
+  name: Get Transactions - 3 Months
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/transactions?customerId={{testCustomerId}}&range=3months
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
