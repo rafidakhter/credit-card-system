@@ -24,6 +24,35 @@ export class PurchaseService {
       throw new NotFoundException('Customer not found');
     }
 
+    const existingTransaction = await this.prisma.transaction.findUnique({
+      where: {
+        customerId_idempotencyKey: {
+          customerId: dto.customerId,
+          idempotencyKey,
+        },
+      },
+    });
+
+    if (existingTransaction) {
+      const existingCard = await this.prisma.card.findUnique({
+        where: { id: existingTransaction.cardId },
+      });
+
+      return {
+        transactionId: existingTransaction.id,
+        customerId: existingTransaction.customerId,
+        cardId: existingTransaction.cardId,
+        amountCents: Math.round(Number(existingTransaction.amount) * 100),
+        currency: existingTransaction.currency,
+        merchantName: existingTransaction.merchantName,
+        status: 'APPROVED',
+        availableLimitCents: existingCard
+          ? Math.round(Number(existingCard.availableLimit) * 100)
+          : 0,
+        createdAt: existingTransaction.createdAt,
+      };
+    }
+
     const card = await this.prisma.card.findUnique({
       where: { id: dto.cardId },
     });
@@ -58,14 +87,7 @@ export class PurchaseService {
             amount: purchaseAmount,
             currency: dto.currency,
             status: TransactionStatus.APPROVED,
-            idempotencyKey: idempotencyKey,
-          },
-        });
-
-        const updatedCard = await tx.card.update({
-          where: { id: card.id },
-          data: {
-            availableLimit: newAvailableLimit,
+            idempotencyKey,
           },
         });
 
@@ -84,9 +106,16 @@ export class PurchaseService {
           },
         });
 
+        const updatedCard = await tx.card.update({
+          where: { id: card.id },
+          data: {
+            availableLimit: newAvailableLimit,
+          },
+        });
+
         return { transaction, updatedCard };
       },
-    )
+    );
 
     return {
       transactionId: transaction.id,
