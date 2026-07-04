@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: credit-card-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: credit_card_user
+      POSTGRES_PASSWORD: credit_card_password
+      POSTGRES_DB: credit_card_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
