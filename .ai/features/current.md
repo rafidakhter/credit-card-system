@@ -4,7 +4,7 @@ Use this file to help any future model find the active work quickly.
 
 ## Active Feature
 
-None yet.
+`.ai/features/active/phase-01-simple-api/feature.md`
 
 ## How to Update
 
@@ -19,4 +19,3 @@ When completing a feature:
 1. Update the feature dossier status to `Completed`.
 2. Move its folder from `.ai/features/active` to `.ai/features/completed`.
 3. Update `Active Feature` above to the next feature or `None yet`.
-

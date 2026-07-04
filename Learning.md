@@ -86,4 +86,4 @@ Add notes here as I learn new ideas.
 | Date | Topic | What I Learned |
 | --- | --- | --- |
 | 2026-07-04 | Functional vs non-functional requirements | Functional means what the system does. Non-functional means how safely, quickly, and reliably it does it. |
-
+| 2026-07-04 | Health endpoint | A health endpoint is a simple URL that tells us the app is running. It is like asking, "Are you alive?" and the app answers, "yes." |
