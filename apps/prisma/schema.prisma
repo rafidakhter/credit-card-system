@@ -98,3 +98,18 @@ model AuditLog {
   createdAt       DateTime @default(now())
   metadata        Json?
 }
+
+
+model OutboxEvent {
+  id          String   @id @default(uuid())
+  eventType   String
+  payload     Json
+  status      String   @default("PENDING")
+  createdAt   DateTime @default(now())
+  processedAt DateTime?
+  failedAt    DateTime?
+  errorMessage String?
+
+  @@map("outbox_events")
+  @@index([status, createdAt])
+}
