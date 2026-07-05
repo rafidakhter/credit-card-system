@@ -7,11 +7,17 @@ import { CardStatus, TransactionStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePurchaseDto } from './dto/create-purchase.dto';
 import { PurchaseResult } from './types/purchase-result.type';
+import { LedgerService } from 'src/ledger/ledger.service';
+import { TransactionService } from 'src/transaction/transaction.service';
 
 @Injectable()
 export class PurchaseService {
-  constructor(private readonly prisma: PrismaService) { }
-
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly transactionService: TransactionService,
+    private readonly ledgerService: LedgerService,
+  ) { }
+  
   async createPurchase(
     dto: CreatePurchaseDto,
     idempotencyKey: string,
@@ -79,31 +85,27 @@ export class PurchaseService {
 
     const { transaction, updatedCard } = await this.prisma.$transaction(
       async (tx) => {
-        const transaction = await tx.transaction.create({
-          data: {
+
+        const transaction = await this.transactionService.createApprovedPurchaseTransaction(
+          tx,
+          {
             customerId: dto.customerId,
             cardId: dto.cardId,
             merchantName: dto.merchantName,
             amount: purchaseAmount,
             currency: dto.currency,
-            status: TransactionStatus.APPROVED,
             idempotencyKey,
           },
-        });
+        )
 
-        await tx.ledgerEvent.create({
-          data: {
-            transactionId: transaction.id,
-            customerId: dto.customerId,
-            cardId: dto.cardId,
-            eventType: 'PURCHASE_APPROVED',
-            amount: purchaseAmount,
-            currency: dto.currency,
-            metadata: {
-              merchantName: dto.merchantName,
-              merchantCategory: dto.merchantCategory ?? null,
-            },
-          },
+        await this.ledgerService.createPurchaseApprovedLedgerEvent(tx, {
+          transactionId: transaction.id,
+          customerId: dto.customerId,
+          cardId: dto.cardId,
+          amount: purchaseAmount,
+          currency: dto.currency,
+          merchantName: dto.merchantName,
+          merchantCategory: dto.merchantCategory,
         });
 
         const updatedCard = await tx.card.update({
@@ -129,4 +131,5 @@ export class PurchaseService {
       createdAt: transaction.createdAt,
     };
   }
+
 }
