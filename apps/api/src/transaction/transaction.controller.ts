@@ -1,20 +1,26 @@
-import { Controller, Get, Query } from '@nestjs/common';
-import { GetTransactionsQueryDto } from './dto/get-transaction.dto';
+import { Body, Controller, Get, Param, Patch, Query } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
+import { GetTransactionsQueryDto } from './dto/get-transaction.dto';
+import { UpdateTransactionStatusDto } from './dto/update-transaction-statud.dto';
 
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-@ApiTags('transactions')
 @Controller('transactions')
 export class TransactionController {
   constructor(private readonly transactionsService: TransactionService) { }
 
-  @ApiOperation({ summary: 'Get transaction history by date range' })
-  @ApiQuery({ name: 'customerId', required: true })
-  @ApiQuery({ name: 'range', required: true, enum: ['month', '3months', 'year'] })
-  @ApiResponse({ status: 200, description: 'Transaction history returned successfully' })
   @Get()
   async getTransactions(@Query() query: GetTransactionsQueryDto) {
     return this.transactionsService.getTransactions(query);
+  }
+
+  @Patch(':id/status')
+  async updateTransactionStatus(
+    @Param('id') transactionId: string,
+    @Body() dto: UpdateTransactionStatusDto,
+  ) {
+    return this.transactionsService.updateTransactionStatus(
+      transactionId,
+      dto.status,
+    );
   }
 }

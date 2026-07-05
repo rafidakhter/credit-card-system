@@ -2,12 +2,12 @@
 
 ## Snapshot
 
-- Status: In progress
+- Status: Completed
 - Phase: `.ai/tasks/phase-01-simple-api`
 - Owner: project
 - Last updated: 2026-07-04
-- Current task: `.ai/tasks/phase-01-simple-api/004-create-customer-card-seed-data.md`
-- Next step: Define the first domain services and the repository contracts they depend on.
+- Current task: Completed
+- Next step: Ask the Phase 1 quiz from `.ai/tasks/phase-01-simple-api/index.md` and move this dossier to completed.
 
 ## Purpose
 
@@ -71,13 +71,13 @@ Response shape:
 - [x] 001 Create NestJS app.
 - [x] 002 Add PostgreSQL with Docker Compose.
 - [x] 003 Add Prisma models.
-- [ ] 004 Design initial domain services and repository contracts.
-- [ ] 005 Build purchase endpoint.
-- [ ] 006 Add idempotency key check.
-- [ ] 007 Add immutable ledger events.
-- [ ] 008 Add purchase history ranges.
-- [ ] 009 Add Swagger docs.
-- [ ] 010 Add basic tests.
+- [x] 004 Design initial domain services and repository contracts.
+- [x] 005 Build purchase endpoint.
+- [x] 006 Add idempotency key check.
+- [x] 007 Add immutable ledger events.
+- [x] 008 Add purchase history ranges.
+- [x] 009 Add Swagger docs.
+- [x] 010 Add basic tests.
 
 ## Completed Work
 
@@ -116,4 +116,4 @@ Response shape:
 
 ## Handoff Notes
 
-Task 004 is now the active focus. The goal is to define the first domain services and repository contracts before writing more backend behavior. Minimal seed data can still be added later as a support tool for local testing. Do not write application code unless the user explicitly asks. Support by explaining steps, reviewing errors, and updating `.ai` and `Learning.md` files.
+Phase 1 is complete. The next repository-maintenance step is to ask the Phase 1 quiz from `.ai/tasks/phase-01-simple-api/index.md`, then move this dossier from `.ai/features/active` to `.ai/features/completed` and update `.ai/features/current.md`.

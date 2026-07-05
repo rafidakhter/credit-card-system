@@ -1,10 +1,59 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { GetTransactionsQueryDto } from './dto/get-transaction.dto';
+import { isValidTransactionStatusTransition } from './helper/transaction-status-transition';
+import { Prisma, Transaction, TransactionStatus } from '@prisma/client';
+import { CreateApprovedPurchaseTransactionInput } from './types/create-approved-purchase-transaction';
 
 @Injectable()
 export class TransactionService {
 	constructor(private readonly prisma: PrismaService) { }
+	
+
+	async createApprovedPurchaseTransaction(
+		tx: Prisma.TransactionClient,
+		input: CreateApprovedPurchaseTransactionInput,
+	): Promise<Transaction> {
+		return tx.transaction.create({
+			data: {
+				customerId: input.customerId,
+				cardId: input.cardId,
+				merchantName: input.merchantName,
+				amount: input.amount,
+				currency: input.currency,
+				status: TransactionStatus.APPROVED,
+				idempotencyKey: input.idempotencyKey,
+			},
+		});
+	}
+
+	async updateTransactionStatus(
+		transactionId: string,
+		nextStatus: TransactionStatus,
+	) {
+		const transaction = await this.prisma.transaction.findUnique({
+			where: { id: transactionId },
+		});
+
+		if (!transaction) {
+			throw new NotFoundException('Transaction not found');
+		}
+
+		if (
+			!isValidTransactionStatusTransition(transaction.status, nextStatus)
+		) {
+			throw new BadRequestException(
+				`Invalid status transition from ${transaction.status} to ${nextStatus}`,
+			);
+		}
+
+		return this.prisma.transaction.update({
+			where: { id: transactionId },
+			data: {
+				status: nextStatus,
+			},
+		});
+	}
 
 	async getTransactions(query: GetTransactionsQueryDto) {
 		const now = new Date();

@@ -4,7 +4,7 @@ Use this file to help any future model find the active work quickly.
 
 ## Active Feature
 
-`.ai/features/active/phase-01-simple-api/feature.md`
+`.ai/features/active/phase-02-financial-correctness/feature.md`
 
 ## How to Update
 
