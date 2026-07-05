@@ -5,6 +5,7 @@ import { CreditCardModule } from '../credit-card/credit-card.module';
 import { LedgerModule } from '../ledger/ledger.module';
 import { RefundController } from './refund.controller';
 import { RefundService } from './refund.service';
+import { AuditModule } from 'src/audit/audit.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { RefundService } from './refund.service';
     TransactionModule,
     CreditCardModule,
     LedgerModule,
+    AuditModule,
   ],
   controllers: [RefundController],
   providers: [RefundService],

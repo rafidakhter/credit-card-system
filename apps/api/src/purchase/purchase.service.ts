@@ -8,6 +8,7 @@ import { TransactionService } from 'src/transaction/transaction.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePurchaseDto } from './dto/create-purchase.dto';
 import { PurchaseResult } from './types/purchase-result.type';
+import { AuditService } from 'src/audit/audit.service';
 
 @Injectable()
 export class PurchaseService {
@@ -17,7 +18,7 @@ export class PurchaseService {
     private readonly ledgerService: LedgerService,
     private readonly creditCardService: CreditCardService,
     private readonly customerService: CustomerService,
-
+    private readonly auditService: AuditService,
   ) { }
 
   async createPurchase(
@@ -85,6 +86,17 @@ export class PurchaseService {
           currency: dto.currency,
           merchantName: dto.merchantName,
           merchantCategory: dto.merchantCategory,
+        });
+
+        await this.auditService.createAuditLog(tx, {
+          actorCustomerId: dto.customerId,
+          action: 'REFUND_CREATED',
+          targetType: 'transaction',
+          targetId: transaction.id,
+          metadata: {
+            refundAmountCents: Math.round(Number(transaction.amount) * 100),
+            currency: transaction.currency,
+          },
         });
 
 

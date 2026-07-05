@@ -21,7 +21,7 @@ export class AuditService {
         action: input.action,
         targetType: input.targetType,
         targetId: input.targetId,
-        metadata: input.metadata,
+        metadata: input.metadata ?? Prisma.JsonNull,
       },
     });
   }

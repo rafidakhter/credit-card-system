@@ -6,9 +6,10 @@ import { TransactionModule } from 'src/transaction/transaction.module'
 import { LedgerModule } from 'src/ledger/ledger.module'
 import { CreditCardModule } from 'src/credit-card/credit-card.module'
 import { CustomerModule } from 'src/customer/customer.module'
+import { AuditModule } from 'src/audit/audit.module'
 
 @Module({
-  imports: [PrismaModule, LedgerModule, TransactionModule, CreditCardModule, CustomerModule],
+  imports: [PrismaModule, LedgerModule, TransactionModule, CreditCardModule, CustomerModule, AuditModule],
   controllers: [PurchaseController],
   providers: [PurchaseService],
 })

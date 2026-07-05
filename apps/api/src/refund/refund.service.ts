@@ -8,6 +8,7 @@ import { CreditCardService } from '../credit-card/credit-card.service';
 import { LedgerService } from '../ledger/ledger.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { TransactionService } from '../transaction/transaction.service';
+import { AuditService } from 'src/audit/audit.service';
 
 @Injectable()
 export class RefundService {
@@ -16,6 +17,7 @@ export class RefundService {
 		private readonly transactionService: TransactionService,
 		private readonly creditCardService: CreditCardService,
 		private readonly ledgerService: LedgerService,
+		private readonly auditService: AuditService,
 	) { }
 
 	async refundTransaction(
@@ -82,6 +84,17 @@ export class RefundService {
 					card.id,
 					restoredAvailableLimit,
 				);
+
+				await this.auditService.createAuditLog(tx, {
+					actorCustomerId: customerId,
+					action: 'REFUND_CREATED',
+					targetType: 'transaction',
+					targetId: transaction.id,
+					metadata: {
+						refundAmountCents: Math.round(Number(transaction.amount) * 100),
+						currency: transaction.currency,
+					},
+				});
 
 				return { updatedTransaction, updatedCard };
 			},
