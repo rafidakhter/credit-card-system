@@ -90,15 +90,15 @@ export class PurchaseService {
 
         await this.auditService.createAuditLog(tx, {
           actorCustomerId: dto.customerId,
-          action: 'REFUND_CREATED',
+          action: 'PURCHASE_CREATED',
           targetType: 'transaction',
           targetId: transaction.id,
           metadata: {
-            refundAmountCents: Math.round(Number(transaction.amount) * 100),
-            currency: transaction.currency,
+            merchantName: dto.merchantName,
+            amountCents: dto.amountCents,
+            currency: dto.currency,
           },
         });
-
 
         const updatedCard = await this.creditCardService.updateAvailableLimit(
           tx,
