@@ -1,12 +1,13 @@
-import { Module } from '@nestjs/common';
-import { PurchaseController } from './purchase.controller';
-import { PurchaseService } from './purchase.service';
-import { PrismaModule } from '../prisma/prisma.module';
-import { TransactionModule } from 'src/transaction/transaction.module';
-import { LedgerModule } from 'src/ledger/ledger.module';
+import { Module } from '@nestjs/common'
+import { PurchaseController } from './purchase.controller'
+import { PurchaseService } from './purchase.service'
+import { PrismaModule } from '../prisma/prisma.module'
+import { TransactionModule } from 'src/transaction/transaction.module'
+import { LedgerModule } from 'src/ledger/ledger.module'
+import { CreditCardModule } from 'src/credit-card/credit-card.module'
 
 @Module({
-  imports: [PrismaModule, LedgerModule, TransactionModule],
+  imports: [PrismaModule, LedgerModule, TransactionModule, CreditCardModule],
   controllers: [PurchaseController],
   providers: [PurchaseService],
 })

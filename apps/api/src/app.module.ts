@@ -6,6 +6,7 @@ import { PurchaseModule } from './purchase/purchase.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { TransactionModule } from './transaction/transaction.module';
 import { LedgerModule } from './ledger/ledger.module';
+import { CreditCardModule } from './credit-card/credit-card.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { LedgerModule } from './ledger/ledger.module';
     PurchaseModule,
     TransactionModule,
     LedgerModule,
+    CreditCardModule,
   ],
 })
 export class AppModule {}

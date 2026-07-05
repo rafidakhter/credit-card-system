@@ -9,6 +9,7 @@ import { CreatePurchaseDto } from './dto/create-purchase.dto';
 import { PurchaseResult } from './types/purchase-result.type';
 import { LedgerService } from 'src/ledger/ledger.service';
 import { TransactionService } from 'src/transaction/transaction.service';
+import { CreditCardService } from 'src/credit-card/credit-card.service';
 
 @Injectable()
 export class PurchaseService {
@@ -16,8 +17,9 @@ export class PurchaseService {
     private readonly prisma: PrismaService,
     private readonly transactionService: TransactionService,
     private readonly ledgerService: LedgerService,
+    private readonly creditCardService: CreditCardService,
   ) { }
-  
+
   async createPurchase(
     dto: CreatePurchaseDto,
     idempotencyKey: string,
@@ -108,16 +110,16 @@ export class PurchaseService {
           merchantCategory: dto.merchantCategory,
         });
 
-        const updatedCard = await tx.card.update({
-          where: { id: card.id },
-          data: {
-            availableLimit: newAvailableLimit,
-          },
-        });
+
+        const updatedCard = await this.creditCardService.updateAvailableLimit(
+          tx,
+          card.id,
+          newAvailableLimit,
+        );
 
         return { transaction, updatedCard };
       },
-    );
+    )
 
     return {
       transactionId: transaction.id,
@@ -129,7 +131,7 @@ export class PurchaseService {
       status: 'APPROVED',
       availableLimitCents: Math.round(Number(updatedCard.availableLimit) * 100),
       createdAt: transaction.createdAt,
-    };
+    }
   }
 
 }
