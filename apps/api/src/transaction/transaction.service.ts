@@ -104,4 +104,41 @@ export class TransactionService {
 			},
 		});
 	}
+
+	async getTransactionByIdOrThrow(transactionId: string) {
+		const transaction = await this.prisma.transaction.findUnique({
+			where: { id: transactionId },
+		});
+
+		if (!transaction) {
+			throw new NotFoundException('Transaction not found');
+		}
+
+		return transaction;
+	}
+
+	async updateTransactionStatusWithTx(
+		tx: Prisma.TransactionClient,
+		transactionId: string,
+		nextStatus: TransactionStatus,
+	) {
+		const transaction = await tx.transaction.findUnique({
+			where: { id: transactionId },
+		});
+
+		if (!transaction) {
+			throw new NotFoundException('Transaction not found');
+		}
+
+		if (!isValidTransactionStatusTransition(transaction.status, nextStatus)) {
+			throw new BadRequestException(
+				`Invalid status transition from ${transaction.status} to ${nextStatus}`,
+			);
+		}
+
+		return tx.transaction.update({
+			where: { id: transactionId },
+			data: { status: nextStatus },
+		});
+	}
 }

@@ -23,4 +23,26 @@ export class LedgerService {
 			},
 		});
 	}
+
+	async createRefundIssuedLedgerEvent(
+		tx: Prisma.TransactionClient,
+		input: {
+			transactionId: string;
+			customerId: string;
+			cardId: string;
+			amount: number;
+			currency: string;
+		},
+	) {
+		return tx.ledgerEvent.create({
+			data: {
+				transactionId: input.transactionId,
+				customerId: input.customerId,
+				cardId: input.cardId,
+				eventType: 'REFUND_ISSUED',
+				amount: input.amount,
+				currency: input.currency,
+			},
+		});
+	}
 }

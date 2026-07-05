@@ -8,6 +8,7 @@ import { TransactionModule } from './transaction/transaction.module';
 import { LedgerModule } from './ledger/ledger.module';
 import { CreditCardModule } from './credit-card/credit-card.module';
 import { CustomerModule } from './customer/customer.module';
+import { RefundModule } from './refund/refund.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { CustomerModule } from './customer/customer.module';
     LedgerModule,
     CreditCardModule,
     CustomerModule,
+    RefundModule,
   ],
 })
 export class AppModule {}
