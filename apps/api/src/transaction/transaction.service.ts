@@ -8,7 +8,7 @@ import { CreateApprovedPurchaseTransactionInput } from './types/create-approved-
 @Injectable()
 export class TransactionService {
 	constructor(private readonly prisma: PrismaService) { }
-	
+
 
 	async createApprovedPurchaseTransaction(
 		tx: Prisma.TransactionClient,
@@ -88,5 +88,20 @@ export class TransactionService {
 			status: transaction.status,
 			createdAt: transaction.createdAt,
 		}));
+
+	}
+
+	async findByCustomerAndIdempotencyKey(
+		customerId: string,
+		idempotencyKey: string,
+	) {
+		return this.prisma.transaction.findUnique({
+			where: {
+				customerId_idempotencyKey: {
+					customerId,
+					idempotencyKey,
+				},
+			},
+		});
 	}
 }

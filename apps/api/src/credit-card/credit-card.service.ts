@@ -6,7 +6,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class CreditCardService {
 	constructor(private readonly prisma: PrismaService) { }
 
-	async getCardOrThrow(cardId: string): Promise<Card> {
+	async getCardByIdOrThrow(cardId: string): Promise<Card> {
 		const card = await this.prisma.card.findUnique({
 			where: { id: cardId },
 		});

@@ -1,15 +1,13 @@
 import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
+  Injectable
 } from '@nestjs/common';
-import { CardStatus, TransactionStatus } from '@prisma/client';
+import { CreditCardService } from 'src/credit-card/credit-card.service';
+import { CustomerService } from 'src/customer/customer.service';
+import { LedgerService } from 'src/ledger/ledger.service';
+import { TransactionService } from 'src/transaction/transaction.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePurchaseDto } from './dto/create-purchase.dto';
 import { PurchaseResult } from './types/purchase-result.type';
-import { LedgerService } from 'src/ledger/ledger.service';
-import { TransactionService } from 'src/transaction/transaction.service';
-import { CreditCardService } from 'src/credit-card/credit-card.service';
 
 @Injectable()
 export class PurchaseService {
@@ -18,33 +16,27 @@ export class PurchaseService {
     private readonly transactionService: TransactionService,
     private readonly ledgerService: LedgerService,
     private readonly creditCardService: CreditCardService,
+    private readonly customerService: CustomerService,
+
   ) { }
 
   async createPurchase(
     dto: CreatePurchaseDto,
     idempotencyKey: string,
   ): Promise<PurchaseResult> {
-    const customer = await this.prisma.customer.findUnique({
-      where: { id: dto.customerId },
-    });
+    await this.customerService.getCustomerOrThrow(dto.customerId)
 
-    if (!customer) {
-      throw new NotFoundException('Customer not found');
-    }
-
-    const existingTransaction = await this.prisma.transaction.findUnique({
-      where: {
-        customerId_idempotencyKey: {
-          customerId: dto.customerId,
-          idempotencyKey,
-        },
-      },
-    });
+    const existingTransaction =
+      await this.transactionService.findByCustomerAndIdempotencyKey(
+        dto.customerId,
+        idempotencyKey,
+      );
 
     if (existingTransaction) {
-      const existingCard = await this.prisma.card.findUnique({
-        where: { id: existingTransaction.cardId },
-      });
+
+      const existingCard = await this.creditCardService.getCardByIdOrThrow(
+        existingTransaction.cardId,
+      );
 
       return {
         transactionId: existingTransaction.id,
@@ -62,7 +54,7 @@ export class PurchaseService {
     }
 
     // validate card and customer relationship, card status, and available limit
-    const card = await this.creditCardService.getCardOrThrow(dto.cardId);
+    const card = await this.creditCardService.getCardByIdOrThrow(dto.cardId);
     this.creditCardService.assertCardBelongsToCustomer(card, dto.customerId);
     this.creditCardService.assertCardIsActive(card);
     const purchaseAmount = dto.amountCents / 100;

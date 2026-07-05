@@ -5,9 +5,10 @@ import { PrismaModule } from '../prisma/prisma.module'
 import { TransactionModule } from 'src/transaction/transaction.module'
 import { LedgerModule } from 'src/ledger/ledger.module'
 import { CreditCardModule } from 'src/credit-card/credit-card.module'
+import { CustomerModule } from 'src/customer/customer.module'
 
 @Module({
-  imports: [PrismaModule, LedgerModule, TransactionModule, CreditCardModule],
+  imports: [PrismaModule, LedgerModule, TransactionModule, CreditCardModule, CustomerModule],
   controllers: [PurchaseController],
   providers: [PurchaseService],
 })
