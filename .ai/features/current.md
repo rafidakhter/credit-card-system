@@ -4,7 +4,7 @@ Use this file to help any future model find the active work quickly.
 
 ## Active Feature
 
-`None yet`
+`.ai/features/active/phase-03-domain-boundaries/feature.md`
 
 ## How to Update
 

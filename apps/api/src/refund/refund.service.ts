@@ -1,14 +1,11 @@
-import {
-	BadRequestException,
-	Injectable
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { TransactionStatus } from '@prisma/client';
+import { AuditService } from 'src/audit/audit.service';
 import { isValidTransactionStatusTransition } from 'src/transaction/helper/transaction-status-transition';
 import { CreditCardService } from '../credit-card/credit-card.service';
 import { LedgerService } from '../ledger/ledger.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { TransactionService } from '../transaction/transaction.service';
-import { AuditService } from 'src/audit/audit.service';
 
 @Injectable()
 export class RefundService {
@@ -25,11 +22,9 @@ export class RefundService {
 		customerId: string,
 		idempotencyKey: string,
 	) {
-
 		const transaction = await this.transactionService.getTransactionByIdOrThrow(
 			transactionId,
 		);
-
 
 		if (transaction.customerId !== customerId) {
 			throw new BadRequestException('Transaction does not belong to customer');
@@ -44,7 +39,6 @@ export class RefundService {
 		if (existingRefund) {
 			return existingRefund;
 		}
-
 
 		if (
 			!isValidTransactionStatusTransition(
@@ -68,11 +62,12 @@ export class RefundService {
 
 		const { updatedTransaction, updatedCard } = await this.prisma.$transaction(
 			async (tx) => {
-				const updatedTransaction = await this.transactionService.updateTransactionStatusWithTx(
-					tx,
-					transaction.id,
-					TransactionStatus.REFUNDED,
-				);
+				const updatedTransaction =
+					await this.transactionService.updateTransactionStatusWithTx(
+						tx,
+						transaction.id,
+						TransactionStatus.REFUNDED,
+					);
 
 				await this.ledgerService.createRefundIssuedLedgerEvent(tx, {
 					transactionId: transaction.id,
@@ -112,6 +107,6 @@ export class RefundService {
 			status: updatedTransaction.status,
 			availableLimitCents: Math.round(Number(updatedCard.availableLimit) * 100),
 			createdAt: updatedTransaction.createdAt,
-		};;
+		};
 	}
 }
