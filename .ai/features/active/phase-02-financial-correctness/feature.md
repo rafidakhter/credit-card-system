@@ -75,18 +75,22 @@ Response shape:
 | Date | Work | Verification |
 | --- | --- | --- |
 | 2026-07-04 | Created Phase 2 active feature dossier. | Dossier created at `.ai/features/active/phase-02-financial-correctness/feature.md`. |
+| 2026-07-05 | Aligned API Prisma imports to the generated client under `apps/generated/prisma`. | Confirmed `AuditLog` exists in the generated client and removed remaining `@prisma/client` imports from `apps/api/src`. |
+| 2026-07-05 | Simplified Prisma back to the standard client location in `apps/node_modules/@prisma/client`. | Removed the custom generator output, regenerated Prisma successfully, and deleted the old `apps/generated/prisma` folder. |
 
 ## Decisions
 
 | Date | Decision | Reason | ADR |
 | --- | --- | --- | --- |
 | 2026-07-04 | Start Phase 2 with purchase atomicity. | Multi-write money flows should become safe before adding more financial behavior. | N/A |
+| 2026-07-05 | Use the default Prisma client location instead of a custom generated folder. | This keeps imports simple and prevents type mismatches between `@prisma/client` and a second generated client. | N/A |
 
 ## Mistakes and Lessons
 
 | Date | Mistake or False Start | Lesson / Prevention |
 | --- | --- | --- |
-| 2026-07-04 | None yet. | Track issues here as Phase 2 work progresses. |
+| 2026-07-05 | The API was importing Prisma types from `@prisma/client` while the schema generates the client to `apps/generated/prisma`. | When Prisma uses a custom `output`, app code should import from that generated client or the type surface can fall out of sync. |
+| 2026-07-05 | A mixed setup grew where some files used `@prisma/client`, some used `apps/generated/prisma`, and one used `@prisma/client/edge`. | Keep one Prisma client import path across the backend so migrations, generate, and editor types all stay aligned. |
 
 ## Open Questions
 

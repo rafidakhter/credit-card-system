@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { PrismaPg } from '@prisma/adapter-pg';
+import { CardStatus, PrismaClient } from '@prisma/client';
 import { Pool } from 'pg';
-import { CardStatus, PrismaClient } from '../generated/prisma';
 
 const connectionString = process.env['DATABASE_URL'];
 
