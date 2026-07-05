@@ -61,27 +61,12 @@ export class PurchaseService {
       };
     }
 
-    const card = await this.prisma.card.findUnique({
-      where: { id: dto.cardId },
-    });
-
-    if (!card) {
-      throw new NotFoundException('Card not found');
-    }
-
-    if (card.customerId !== dto.customerId) {
-      throw new BadRequestException('Card does not belong to customer');
-    }
-
-    if (card.status !== CardStatus.ACTIVE) {
-      throw new BadRequestException('Card is not active');
-    }
-
+    // validate card and customer relationship, card status, and available limit
+    const card = await this.creditCardService.getCardOrThrow(dto.cardId);
+    this.creditCardService.assertCardBelongsToCustomer(card, dto.customerId);
+    this.creditCardService.assertCardIsActive(card);
     const purchaseAmount = dto.amountCents / 100;
-
-    if (Number(card.availableLimit) < purchaseAmount) {
-      throw new BadRequestException('Insufficient available limit');
-    }
+    this.creditCardService.assertSufficientAvailableLimit(card, purchaseAmount);
 
     const newAvailableLimit = Number(card.availableLimit) - purchaseAmount;
 
