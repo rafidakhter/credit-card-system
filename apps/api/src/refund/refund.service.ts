@@ -25,6 +25,16 @@ export class RefundService {
 		customerId: string,
 		idempotencyKey: string,
 	) {
+
+		const transaction = await this.transactionService.getTransactionByIdOrThrow(
+			transactionId,
+		);
+
+
+		if (transaction.customerId !== customerId) {
+			throw new BadRequestException('Transaction does not belong to customer');
+		}
+
 		const existingRefund =
 			await this.transactionService.findByCustomerAndIdempotencyKey(
 				customerId,
@@ -35,13 +45,6 @@ export class RefundService {
 			return existingRefund;
 		}
 
-		const transaction = await this.transactionService.getTransactionByIdOrThrow(
-			transactionId,
-		);
-
-		if (transaction.customerId !== customerId) {
-			throw new BadRequestException('Transaction does not belong to customer');
-		}
 
 		if (
 			!isValidTransactionStatusTransition(

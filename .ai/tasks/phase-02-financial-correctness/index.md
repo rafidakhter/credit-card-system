@@ -1,5 +1,9 @@
 # Phase 2: Make It Financially Safer
 
+## Status
+
+Completed on 2026-07-05.
+
 ## Goal
 
 Show that correctness matters more than speed in the money path.
@@ -24,13 +28,13 @@ I care more about correctness than speed in the money path. If something changes
 
 ## Micro Tasks
 
-- [ ] Wrap purchase creation in a database transaction.
-- [ ] Add unique constraint on `idempotency_key`.
-- [ ] Add card limit validation.
-- [ ] Add refund flow.
-- [ ] Add audit logs.
-- [ ] Prevent deleting ledger events through normal application code.
-- [ ] Add transaction status lifecycle.
+- [x] Wrap purchase creation in a database transaction.
+- [x] Add unique constraint on `idempotency_key`.
+- [x] Add card limit validation.
+- [x] Add refund flow.
+- [x] Add audit logs.
+- [x] Prevent deleting ledger events through normal application code.
+- [x] Add transaction status lifecycle.
 
 ## Status Lifecycle
 
@@ -55,6 +59,7 @@ The exact names can evolve, but invalid transitions should be rejected.
 - Refunds do not erase original purchases.
 - Invalid status transitions fail.
 - Audit and ledger records make the money story inspectable.
+- Phase 2 is complete and the project is ready to move to Phase 3.
 
 ## Phase Quiz
 
