@@ -9,6 +9,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreatePurchaseDto } from './dto/create-purchase.dto';
 import { PurchaseResult } from './types/purchase-result.type';
 import { AuditService } from 'src/audit/audit.service';
+import { PURCHASE_CREATED_EVENT, PurchaseCreatedEvent } from './events/purchase-created.event';
 
 @Injectable()
 export class PurchaseService {
@@ -105,6 +106,26 @@ export class PurchaseService {
           card.id,
           newAvailableLimit,
         );
+
+        await tx.outboxEvent.create({
+          data: {
+            eventType: PURCHASE_CREATED_EVENT,
+            payload: {
+              eventType: PURCHASE_CREATED_EVENT,
+              eventId: crypto.randomUUID(),
+              occurredAt: new Date().toISOString(),
+              data: {
+                purchaseId: transaction.id,
+                transactionId: transaction.id,
+                customerId: dto.customerId,
+                cardId: dto.cardId,
+                amountCents: dto.amountCents,
+                currency: dto.currency ?? 'CAD',
+              },
+            },
+            status: 'PENDING',
+          },
+        });
 
         return { transaction, updatedCard };
       },

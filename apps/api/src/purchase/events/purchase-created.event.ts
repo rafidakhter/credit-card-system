@@ -9,7 +9,7 @@ export type PurchaseCreatedEvent = {
 		transactionId: string;
 		customerId: string;
 		cardId: string;
-		amount: number;
+		amountCents: number;
 		currency: string;
 	};
 };
