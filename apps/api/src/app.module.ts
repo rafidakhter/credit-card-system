@@ -11,6 +11,7 @@ import { CustomerModule } from './customer/customer.module';
 import { RefundModule } from './refund/refund.module';
 import { AuditModule } from './audit/audit.module';
 import { StatementModule } from './statement/statement.module';
+import { OutboxModule } from './outbox/outbox.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { StatementModule } from './statement/statement.module';
     RefundModule,
     AuditModule,
     StatementModule,
+    OutboxModule,
   ],
 })
 export class AppModule {}

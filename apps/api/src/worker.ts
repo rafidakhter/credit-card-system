@@ -6,44 +6,35 @@ import {
 	PurchaseCreatedEvent,
 } from './purchase/events/purchase-created.event';
 import { StatementService } from './statement/statement.service';
+import { OutboxService } from './outbox/outbox.service';
 
 async function bootstrapWorker() {
 	const app = await NestFactory.createApplicationContext(AppModule);
 
 	console.log('Worker started');
 
-	const prisma = app.get(PrismaService);
+	const outboxService = app.get(OutboxService);
 	const statementService = app.get(StatementService);
 
-	const pendingEvents = await prisma.outboxEvent.findMany({
-		where: {
-			status: 'PENDING',
-		},
-		orderBy: {
-			createdAt: 'asc',
-		},
-		take: 10,
-	});
+	const eventsToProcess = await outboxService.findEventsReadyToProcess(10);
 
-	console.log(`Found ${pendingEvents.length} pending outbox events`);
+	for (const event of eventsToProcess) {
+		console.log(`Processing event: ${event.id} ${event.eventType}`);
 
-	for (const event of pendingEvents) {
-		console.log(`Pending event: ${event.id} ${event.eventType}`);
+		try {
+			if (event.eventType === PURCHASE_CREATED_EVENT) {
+				await statementService.applyPurchaseCreated(
+					event.payload as PurchaseCreatedEvent,
+				);
 
-		if (event.eventType === PURCHASE_CREATED_EVENT) {
-			await statementService.applyPurchaseCreated(
-				event.payload as PurchaseCreatedEvent,
-			);
+				await outboxService.markProcessed(event.id);
 
-			await prisma.outboxEvent.update({
-				where: { id: event.id },
-				data: {
-					status: 'PROCESSED',
-					processedAt: new Date(),
-				},
-			});
+				console.log(`Processed event: ${event.id}`);
+			}
+		} catch (error) {
+			await outboxService.markFailed(event.id, error);
 
-			console.log(`Processed event: ${event.id}`);
+			console.error(`Failed event: ${event.id}`, error);
 		}
 	}
 

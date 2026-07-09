@@ -101,17 +101,21 @@ model AuditLog {
 
 
 model OutboxEvent {
-  id          String   @id @default(uuid())
-  eventType   String
-  payload     Json
-  status      String   @default("PENDING")
-  createdAt   DateTime @default(now())
-  processedAt DateTime?
-  failedAt    DateTime?
+  id           String    @id @default(uuid())
+  eventType    String
+  payload      Json
+  status       String    @default("PENDING")
+  createdAt    DateTime  @default(now())
+  processedAt  DateTime?
+  failedAt     DateTime?
   errorMessage String?
+
+  retryCount   Int       @default(0)
+  nextRetryAt  DateTime?
 
   @@map("outbox_events")
   @@index([status, createdAt])
+  @@index([status, nextRetryAt])
 }
 
 model StatementSummary {
