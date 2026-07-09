@@ -1,12 +1,11 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { PrismaService } from './prisma/prisma.service';
+import { OutboxService } from './outbox/outbox.service';
 import {
 	PURCHASE_CREATED_EVENT,
 	PurchaseCreatedEvent,
 } from './purchase/events/purchase-created.event';
 import { StatementService } from './statement/statement.service';
-import { OutboxService } from './outbox/outbox.service';
 
 async function bootstrapWorker() {
 	const app = await NestFactory.createApplicationContext(AppModule);
@@ -22,17 +21,19 @@ async function bootstrapWorker() {
 		console.log(`Processing event: ${event.id} ${event.eventType}`);
 
 		try {
-			if (event.eventType === PURCHASE_CREATED_EVENT) {
-				await statementService.applyPurchaseCreated(
-					event.payload as PurchaseCreatedEvent,
-				);
-
-				await outboxService.markProcessed(event.id);
-
-				console.log(`Processed event: ${event.id}`);
+			if (event.eventType !== PURCHASE_CREATED_EVENT) {
+				throw new Error(`Unknown event type: ${event.eventType}`);
 			}
+
+			await statementService.applyPurchaseCreated(
+				event.payload as PurchaseCreatedEvent,
+			);
+
+			await outboxService.markProcessed(event.id);
+
+			console.log(`Processed event: ${event.id}`);
 		} catch (error) {
-			await outboxService.markFailed(event.id, error);
+			await outboxService.recordProcessingFailure(event, error);
 
 			console.error(`Failed event: ${event.id}`, error);
 		}
